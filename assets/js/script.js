@@ -2,18 +2,17 @@ var timerEL = document.getElementById("timer-count-id");
 var quizContainer = document.getElementById('quiz');
 var resultsContainer = document.getElementById('results');
 var startButton = document.getElementById('start');
-var timeLeft = 60;
-var btn = document.createElement("button");
+var timeLeft = 59;
 let buttonPressed = true;
 var index = 0;
 var score = 0;
 
 var questionArr = [
-    {q: "Is this true?", 
+    {q: "What is the capital of California?", 
     ans: {
-        1: "True",
-        2: "false",
-        3: "false"
+        1: "Sacramento",
+        2: "Los Angeles",
+        3: "Denver"
     },
     correctAns: 1
 }, 
@@ -28,7 +27,6 @@ var questionArr = [
 
 
 function timerFun() {
-    showQuestion(0);
     var timerHolderEL = document.createElement("h2");
     timerHolderEL.className = "timer-item";
     countFromSixty = setInterval(function() {
@@ -40,59 +38,57 @@ function timerFun() {
             timerEL.textContent = timeLeft + " seconds remaining";
             timeLeft--;
         }
-    }, 1000)
+    }, 1000) 
+    showQuestion(0);
 }
 
 function showQuestion(index) {
-    var output = [];
-    var ans = [];
+    var bigBoyContainer = document.createElement("ul");
+    quizContainer.innerHTML = ""
+
     buttonNumber = 0
 
+    // creates and places question in quiz container
+    if (index >= questionArr.length) {
+        showsOver(score);
+    } else {
+    var questionEL = document.createElement("div");
+    var currentQuestion = questionArr[index]
+    questionEL.innerHTML = '<div class="question">'+currentQuestion.q + '</div>'
+    bigBoyContainer.appendChild(questionEL)
+
     for (numbers in questionArr[index].ans) {
-        var ButtonButtonEL = document.createElement("button");
-        ButtonButtonEL.setAttribute("data-button-id", buttonNumber);
+        var ButtonButtonEL = document.createElement("li");
+        // ButtonButtonEL.setAttribute("data-button-id", buttonNumber);
 
-        ans.push(
-            '<label>'
-            + '<input type="button" class="btn theButtons" name="'+numbers+'" value="'+questionArr[index].ans[numbers]+'">'
-            + '<label>');
+        
+        ButtonButtonEL.innerHTML = (
+            '<input type="button" class="btn bigButtons" name="'+numbers+'" value="'+questionArr[index].ans[numbers]+'">'
+            );
 
+        bigBoyContainer.appendChild(ButtonButtonEL);
+        quizContainer.appendChild(bigBoyContainer);
         buttonNumber++;
     }
-    output.push(
-        '<div class="question">'+questionArr[index].q + '</div>'
-        + '<div class="answers">' + ans.join(' ') + '</div>');
 
-    
-    quizContainer.innerHTML = output;
-    var buttonEL = document.getElementsByClassName("theButtons");
+    var buttons = document.getElementsByClassName('bigButtons');
 
-    for (var i = 0; i< buttonEL.length; i++) {
-        
-            buttonEL[i].onclick = function() {
-                console.log(i)
-                var selectedButtonEL = ButtonButtonEL
-                var selected = ButtonButtonEL.getAttribute("data-button-number");
-               // var selected = document.getElementById(this.id);
-            index++
-            if (index >= buttonEL.length -1) {
-                quizResults(selected, index-1);
-                showsOver(score);
-                return;
-            } else {        
-                quizResults(selected, index-1);
-            showQuestion(index);
+    for (var i = 0; i< buttons.length; i++) {
+        buttons[i].id = i;
+        buttons[i].addEventListener("click", function() {
+            console.log(this);
+            var selected = parseInt(this.id);
+            if ((selected + 1) === questionArr[index].correctAns) {
+                console.log("correct")
+                score++;
+                timeLeft += 10;
+            } else {
+                console.log("wrong");
             }
-        }
-    }
-}
-
-
-
-function quizResults(selected, index) {
-    if (selected === (questionArr[index].correctAns)) {
-        score++;
-        return score;
+                index++;
+                showQuestion(index);
+            });
+        }; return score;
     }
 }
 
@@ -105,10 +101,9 @@ function startQuiz() {
 }
 
 
-function showsOver() {
+function showsOver(score) {
     quizContainer.style.display = 'none';
-    resultsContainer.innerHTML = score;
-    console.log(score);
+    resultsContainer.innerHTML = '<p id="endgame">Your score is '+score+'!</p>'
 }
 
 startQuiz();
