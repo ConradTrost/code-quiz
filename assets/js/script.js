@@ -3,24 +3,28 @@ var quizContainer = document.getElementById('quiz');
 var resultsContainer = document.getElementById('results');
 var startButton = document.getElementById('start');
 var timeLeft = 59;
-let buttonPressed = true;
 var index = 0;
 var score = 0;
 
+// For local Storage
+var formContainer = document.querySelector("#input-group");
+
+
 var questionArr = [
-    {q: "What is the capital of California?", 
+    {q: "Which of these is not an HTML element?", 
     ans: {
-        1: "Sacramento",
-        2: "Los Angeles",
-        3: "Denver"
+        1: "Javascript",
+        2: "<h1>",
+        3: "<p>",
+        4: "<title>"
     },
     correctAns: 1
 }, 
-    {q: "This is false", 
+    {q: "What does CSS stand for?", 
     ans: {
-        1: "true",
-        2: "false",
-        3: "true"
+        1: "Central System Software",
+        2: "Cascading Style Sheets",
+        3: "Control Styling Software"
     },
     correctAns: 2
     }];
@@ -83,7 +87,7 @@ function showQuestion(index) {
                 score++;
                 timeLeft += 10;
             } else {
-                console.log("wrong");
+                timeLeft -= 20;
             }
                 index++;
                 showQuestion(index);
@@ -94,6 +98,8 @@ function showQuestion(index) {
 
 
 function startQuiz() {
+    // hides input form
+
     startButton.onclick = function() {
         startButton.remove(startButton);
         timerFun();
@@ -104,6 +110,40 @@ function startQuiz() {
 function showsOver(score) {
     quizContainer.style.display = 'none';
     resultsContainer.innerHTML = '<p id="endgame">Your score is '+score+'!</p>'
+    initialForm();
+
 }
 
 startQuiz();
+
+// Stuff for the local storage / save user initials and score
+
+function initialForm() {
+    formContainer.innerHTML = (
+    '<label for="initials">Enter Your Initials</label>'
+    + '<input type="text" name="initials" id="initials" placeholder="CT"/>'
+    + '<button class="btn" id="submit">Submit to Scoreboard!</button>');
+
+    // Sets the DOM elements to save score and name
+
+    var submitButton = document.querySelector("#submit");
+    var userInput = document.querySelector("#initials");
+
+
+    submitButton.addEventListener("click", function(event) {
+        event.preventDefault();
+
+        if (userInput === "") {
+            initialForm();
+    //    } else if (userInput.length >= 2) {
+      //      displayMessage("error", "Must be up to 2 characters");
+        } else {
+        localStorage.setItem("input", userInput);
+        localStorage.setItem("score", score);
+        console.log(localStorage.getItem("input"));
+        console.log(localStorage.getItem("score"));
+        }
+    })
+}
+
+
